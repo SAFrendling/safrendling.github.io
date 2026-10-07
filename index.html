@@ -1,8 +1,83 @@
-<!DOCTYPE=HTML>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website Home</title>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scott Frendling // Cybersecurity &amp; Network Portfolio</title>
+  <!-- Root-relative link to unified stylesheet -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <!-- Off-Canvas Navigation Drawer Toggle -->
+  <button class="menu-toggle" aria-label="Toggle Menu">≡</button>
+
+  <!-- Navigation Drawer -->
+  <nav class="nav-drawer">
+    <a href="/">[ / ] Home</a>
+    <a href="/resume.html">[ /resume ] Qualifications &amp; Certs</a>
+    <a href="/network.html">[ /network ] Homelab Topology</a>
+    <a href="/writeups/">[ /writeups ] Lab Writeups &amp; Notes</a>
+  </nav>
+
+  <!-- Darkened background overlay when menu is open -->
+  <div class="overlay"></div>
+
+  <!-- Main Content Container -->
+  <main class="main-container">
+
+    <!-- Hero / Welcome Header -->
+    <section class="section-block">
+      <h2>Scott Frendling // System Overview</h2>
+      <p>
+        Welcome to my technical portfolio and lab documentation hub. I specialize in cybersecurity, network security operations, vulnerability assessments, and penetration testing.
+      </p>
+    </section>
+
+    <!-- Core Focus & Skills Card -->
+    <section class="section-block">
+      <h2>Technical Focus &amp; Operations</h2>
+      <p>
+        This site serves as an interactive repository for my technical security projects, homelab configurations, and writeups. Key areas of focus include:
+      </p>
+      <ul>
+        <li><strong>Network Security &amp; Infrastructure:</strong> Segmented VLAN routing, firewall policy administration (OPNsense), and traffic monitoring.</li>
+        <li><strong>Penetration Testing &amp; Web Security:</strong> Hands-on vulnerability analysis using Burp Suite, capture-the-flag (picoCTF) challenges, and offensive security methodologies.</li>
+        <li><strong>Lab Environment &amp; Systems:</strong> Dual-stack virtualization environments running Pop!_OS, Kali Linux, and Windows Server systems.</li>
+      </ul>
+    </section>
+
+    <!-- Verified Credentials Overview -->
+    <section class="section-block">
+      <h2>Certifications &amp; Background</h2>
+      <p>
+        Holds active industry credentials including <strong>CompTIA Security+</strong> and the <strong>eJPT (eLearnSecurity Junior Penetration Tester)</strong> certification from INE. Academic background includes degree and certificate programs in Cybersecurity at Ivy Tech Community College.
+      </p>
+      <p>
+        <a href="/resume.html">View full resume, verified certification badges, and academic details →</a>
+      </p>
+    </section>
+
+    <!-- Quick Navigation Links -->
+    <section class="section-block">
+      <h2>Explore Node Documentation</h2>
+      <div class="cert-grid">
+        <div class="cert-card">
+          <h3>Homelab Network Topology</h3>
+          <p>Interactive breakdown of gateway routing, isolated VLANs, and active lab nodes.</p>
+          <a href="/network.html" class="btn-home">Inspect Network →</a>
+        </div>
+        <div class="cert-card">
+          <h3>Technical Writeups</h3>
+          <p>Detailed notes on CTF room walkthroughs, vulnerability remediation, and tool configs.</p>
+          <a href="/writeups/" class="btn-home">Browse Writeups →</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Navigation & Load-Bearing Dependency Script -->
+  <script src="/assets/js/main.js"></script>
+</body>
 </html>
