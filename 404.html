@@ -10,12 +10,12 @@
 <body class="error-page">
 
   <main class="error-container">
-    
+
     <!-- Flickering Image Container -->
     <div class="flicker-container">
       <!-- Base Background Image -->
       <img src="/assets/images/404.jpg" alt="404 Normal">
-      
+
       <!-- Flickering Glitch Overlay Image -->
       <img src="/assets/images/404-smash.jpg" alt="404 Smash" class="img-overlay">
     </div>
@@ -23,10 +23,17 @@
     <h1>404 // NODE NOT FOUND</h1>
     <p>The requested network endpoint does not exist or has been decommissioned.</p>
 
-    <!-- Direct link back to homepage -->
-    <a href="/" class="btn-home">Return to safer spaces</a>
+    <!-- Action Buttons -->
+    <div class="btn-group">
+      <a href="/" class="btn-home">Return to safer spaces</a>
+      <button id="check-coconut-btn" class="btn-secondary">Check Coconut Integrity</button>
+    </div>
+
+    <!-- Diagnostic Result Display -->
+    <div id="coconut-status" class="coconut-status"></div>
 
   </main>
 
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
