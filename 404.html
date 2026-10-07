@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 // Node Not Found</title>
+  <!-- Root-relative path ensures CSS loads no matter how deep the broken URL was -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="error-page">
 
-    <link rel="stylesheet" href="/assets/css/style.css">
-  </head>
-  <body>
+  <main class="error-content">
+    
+    <!-- Flickering Image Container -->
     <div class="flicker-container">
-      <img src="/assets/images/404.jpg" class="img-base" alt="404 Normal">
-      <img src="/assets/images/404-smash.jpg" class="img-overlay" alt="404 Smash">
+      <!-- Base Background Image -->
+      <img src="/assets/images/404-base.jpg" alt="404 Normal">
+      
+      <!-- Flickering Glitch Overlay Image -->
+      <img src="/assets/images/404-smash.jpg" alt="404 Smash" class="img-overlay">
     </div>
-  </body>
+
+    <h1>404 // NODE NOT FOUND</h1>
+    <p>The requested network endpoint does not exist or has been decommissioned.</p>
+
+    <!-- Direct link back to homepage -->
+    <a href="/" class="btn-home">Return to safer spaces</a>
+
+  </main>
+
+</body>
 </html>
