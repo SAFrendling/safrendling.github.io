@@ -71,15 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
       fetch('/coconut.jpg', { method: 'HEAD' })
         .then((res) => {
           if (res.ok) {
-            statusDiv.className = 'coconut.jpg located';
+            statusDiv.className = 'coconut-status intact';
             statusDiv.innerHTML = '✔ [OK] <code>coconut.jpg</code> is present. This 404 is on you.';
           } else {
-            statusDiv.className = 'coconut.jpg missing';
+            statusDiv.className = 'coconut-status missing';
             statusDiv.innerHTML = '✖ [CRITICAL] I have no fucking idea who put this here, but when I deleted it the website would not start. Words cannot describe my fucking confusion.';
           }
         })
         .catch(() => {
-          statusDiv.className = 'coconut.jpg missing';
+          statusDiv.className = 'coconut-status missing';
           statusDiv.innerHTML = '✖ [CRITICAL] I have no fucking idea who put this here, but when I deleted it the website would not start. Words cannot describe my fucking confusion.';
         });
     });
