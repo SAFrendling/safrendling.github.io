@@ -66,4 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
+  document.addEventListener('DOMContentLoaded', () => {
+  const recItems = document.querySelectorAll('.rec-item');
+  const detailImg = document.getElementById('detail-img');
+  const detailTitle = document.getElementById('detail-title');
+  const detailDesc = document.getElementById('detail-desc');
+
+  recItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // Remove active highlight from all items
+      recItems.forEach(i => i.classList.remove('active'));
+      
+      // Highlight clicked item
+      item.classList.add('active');
+
+      // Extract details from data-attributes
+      const title = item.getAttribute('data-title');
+      const img = item.getAttribute('data-img');
+      const desc = item.getAttribute('data-desc');
+
+      // Update detail panel content
+      detailTitle.textContent = title;
+      detailImg.src = img || '/assets/img/placeholder.jpg';
+      detailDesc.textContent = desc;
+    });
+  });
+});
 });
