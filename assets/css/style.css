@@ -379,6 +379,11 @@ html {
 .recs-section {
   margin-bottom: 4rem; /* Spacing between major category sections */
 }
+.recs-section h2 {
+   text-align: center;
+   width: 100%;
+   margin-bottom: 1.5rem;
+}
 /* Container Layout: Left Nav | Middle List | Right Details */
 .recs-container {
   display: grid;
