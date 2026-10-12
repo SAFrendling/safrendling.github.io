@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
-  document.addEventListener('DOMContentLoaded', () => {
   const recItems = document.querySelectorAll('.rec-item');
   const detailImg = document.getElementById('detail-img');
   const detailTitle = document.getElementById('detail-title');
@@ -86,10 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const desc = item.getAttribute('data-desc');
 
       // Update detail panel content
-      detailTitle.textContent = title;
-      detailImg.src = img || '/assets/img/placeholder.jpg';
-      detailDesc.textContent = desc;
+      if (detailTitle) detailTitle.textContent = title;
+      if (detailImg) detailImg.src = img || '/assets/img/placeholder.jpg';
+      if (detailDesc) detailDesc.textContent = desc;
     });
   });
-});
 });
