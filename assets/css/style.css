@@ -334,3 +334,48 @@ body.error-page {
   background: rgba(255, 123, 114, 0.1);
   border: 1px solid #ff7b72;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Container holding sidebar + content side-by-side */
+.recs-container {
+  display: flex;
+  gap: 2rem;
+  position: relative;
+}
+
+/* Sticky Left Sidebar Navigation */
+.recs-sidebar {
+  position: sticky;
+  top: 2rem; /* Distance from top of viewport when scrolling */
+  align-self: flex-start;
+  min-width: 120px;
+  border-right: 2px solid var(--border-color, #30363d);
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sidebar Anchor Links */
+.recs-sidebar a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.2s ease, font-size 0.2s ease;
+}
+
+.recs-sidebar a:hover {
+  color: var(--text-accent, #58a6ff);
+}
+
+/* Right Content Column */
+.recs-content {
+  flex: 1;
+}
+
+.recs-section {
+  margin-bottom: 4rem; /* Spacing between major category sections */
+}
