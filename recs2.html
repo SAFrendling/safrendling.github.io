@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scott Frendling // Recommendations</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+  <button class="menu-toggle" aria-label="Toggle Menu">≡</button>
+
+  <nav class="nav-drawer">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/network.html" class="nav-link">Network</a>
+    <a href="/resume.html" class="nav-link">Resume</a>
+    <a href="/recs.html" class="nav-link active">Recommendations</a>
+  </nav>
+
+  <div class="overlay"></div>
+
+  <main class="main-container">
+
+    <header class="site-header">
+      <h1>RECOMMENDATIONS</h1>
+    </header>
+
+    <div class="recs-container">
+
+      <!-- Column 1: Left Sticky Navigation -->
+      <nav class="recs-sidebar">
+        <a href="#music">Music</a>
+        <a href="#games">Games</a>
+        <a href="#etc">Etc</a>
+      </nav>
+
+      <!-- Column 2: Interactive List Content -->
+      <div class="recs-content">
+
+        <!-- Music -->
+        <section id="music" class="recs-section">
+          <h2>Music</h2>
+
+          <h3>Electronic</h3>
+          <ul>
+            <li class="rec-item" 
+                data-title="HEALTH" 
+                data-img="/assets/img/health.jpg" 
+                data-desc="Industrial rock/electronic band with incredible atmosphere and driving synth lines. Perfect music for high-focus lab work.">
+              HEALTH ☆
+            </li>
+            <li class="rec-item" 
+                data-title="Deadmau5" 
+                data-img="/assets/img/deadmau5.jpg" 
+                data-desc="Classic progressive house. Great sound design and timeless production.">
+              Deadmau5 ☆
+            </li>
+          </ul>
+
+          <h3>Soundtracks</h3>
+          <ul>
+            <li class="rec-item" 
+                data-title="VA-11 Hall-A OST" 
+                data-img="/assets/img/va11halla-ost.jpg" 
+                data-desc="Chill cyberpunk synthwave soundtrack by Garoad. Sets a relaxed, nostalgic mood.">
+              VA-11 Hall-A: Cyberpunk Bartender Action
+            </li>
+          </ul>
+        </section>
+
+        <!-- Games -->
+        <section id="games" class="recs-section">
+          <h2>Games</h2>
+
+          <h3>Single Player</h3>
+          <ul>
+            <li class="rec-item" 
+                data-title="VA-11 Hall-A: Cyberpunk Bartender Action" 
+                data-img="/assets/img/va11halla.jpg" 
+                data-desc="A cyberpunk booze-em-up about mixing drinks and listening to stories in a dystopian city. Great writing, music, and aesthetic.">
+              VA-11 Hall-A: Cyberpunk Bartender Action ☆
+            </li>
+            <li class="rec-item" 
+                data-title="Sekiro: Shadows Die Twice" 
+                data-img="/assets/img/sekiro.jpg" 
+                data-desc="Masterpiece combat mechanics centered on deflection and rhythm. Incredibly rewarding learning curve.">
+              Sekiro: Shadows Die Twice ☆
+            </li>
+          </ul>
+        </section>
+
+        <!-- Etc -->
+        <section id="etc" class="recs-section">
+          <h2>Etc</h2>
+          <ul>
+            <li class="rec-item" 
+                data-title="Example Topic" 
+                data-img="/assets/img/placeholder.jpg" 
+                data-desc="Placeholder description for misc items or hobbies.">
+              Lorem Ipsum Item
+            </li>
+          </ul>
+        </section>
+
+      </div>
+
+      <!-- Column 3: Right Inspector / Detail Panel -->
+      <aside class="detail-pane" id="detail-pane">
+        <img id="detail-img" class="detail-img" src="/assets/img/placeholder.jpg" alt="Preview">
+        <h3 id="detail-title" class="detail-title">Select an item</h3>
+        <p id="detail-desc" class="detail-desc">Click on any item in the list to view album art, game covers, and personal notes.</p>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

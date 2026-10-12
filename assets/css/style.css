@@ -379,3 +379,107 @@ html {
 .recs-section {
   margin-bottom: 4rem; /* Spacing between major category sections */
 }
+/* Container Layout: Left Nav | Middle List | Right Details */
+.recs-container {
+  display: grid;
+  grid-template-columns: 140px 1fr 340px; /* Left Sidebar | List | Detail Panel */
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Left Sidebar */
+.recs-sidebar {
+  position: sticky;
+  top: 2rem;
+  border-right: 1px solid #30363d;
+  padding-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.recs-sidebar a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.recs-sidebar a:hover {
+  color: var(--text-accent, #58a6ff);
+}
+
+/* Clickable Items in Middle List */
+.recs-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.rec-item {
+  cursor: pointer;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.rec-item:hover, .rec-item.active {
+  background-color: rgba(88, 166, 255, 0.1);
+  color: var(--text-accent, #58a6ff);
+}
+
+.rec-item::after {
+  content: "→";
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.rec-item:hover::after, .rec-item.active::after {
+  opacity: 1;
+}
+
+/* Right Detail Pane */
+.detail-pane {
+  position: sticky;
+  top: 2rem;
+  border-left: 1px solid #30363d;
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  background-color: #161b22;
+  border: 1px solid #30363d;
+}
+
+.detail-title {
+  color: var(--text-accent, #58a6ff);
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.detail-desc {
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive collapse for smaller screens */
+@media (max-width: 900px) {
+  .recs-container {
+    grid-template-columns: 1fr;
+  }
+  .recs-sidebar, .detail-pane {
+    position: static;
+    border: none;
+    padding: 0;
+  }
+}
