@@ -37,38 +37,59 @@
       <!-- Column 2: Interactive List Content -->
       <div class="recs-content">
 
-        <!-- Music -->
+        <!-- Music (Using Band -> Song List Layout) -->
         <section id="music" class="recs-section">
           <h2>Music</h2>
 
           <h3>Electronic</h3>
-          <ul>
-            <li class="rec-item" 
-                data-title="HEALTH" 
-                data-img="/assets/img/health.jpg" 
-                data-desc="Industrial rock/electronic band with incredible atmosphere and driving synth lines. Perfect music for high-focus lab work.">
-              HEALTH ☆
-            </li>
-            <li class="rec-item" 
-                data-title="Deadmau5" 
-                data-img="/assets/img/deadmau5.jpg" 
-                data-desc="Classic progressive house. Great sound design and timeless production.">
-              Deadmau5 ☆
-            </li>
-          </ul>
+
+          <!-- Band 1: HEALTH -->
+          <div class="artist-block">
+            <h4 class="band-name">HEALTH</h4>
+            <ul class="song-list">
+              <li class="rec-item" 
+                  data-title="HEALTH" 
+                  data-img="/assets/images/health.png" 
+                  data-desc="Industrial rock/electronic band with incredible atmosphere and driving synth lines. Perfect music for high-focus lab work.">
+                DEMIGODS
+              </li>
+              <li class="rec-item" 
+                  data-title="HEALTH" 
+                  data-img="/assets/images/health.png" 
+                  data-desc="Industrial rock/electronic band with incredible atmosphere and driving synth lines.">
+                HATEFUL
+              </li>
+            </ul>
+          </div>
+
+          <!-- Band 2: Deadmau5 -->
+          <div class="artist-block">
+            <h4 class="band-name">Deadmau5</h4>
+            <ul class="song-list">
+              <li class="rec-item" 
+                  data-title="Deadmau5" 
+                  data-img="/assets/img/deadmau5.jpg" 
+                  data-desc="Classic progressive house. Great sound design and timeless production.">
+                Deadmau5 ☆
+              </li>
+            </ul>
+          </div>
 
           <h3>Soundtracks</h3>
-          <ul>
-            <li class="rec-item" 
-                data-title="VA-11 Hall-A OST" 
-                data-img="/assets/img/va11halla-ost.jpg" 
-                data-desc="Chill cyberpunk synthwave soundtrack by Garoad. Sets a relaxed, nostalgic mood.">
-              VA-11 Hall-A: Cyberpunk Bartender Action
-            </li>
-          </ul>
+          <div class="artist-block">
+            <h4 class="band-name">Garoad</h4>
+            <ul class="song-list">
+              <li class="rec-item" 
+                  data-title="VA-11 Hall-A OST" 
+                  data-img="/assets/img/va11halla-ost.jpg" 
+                  data-desc="Chill cyberpunk synthwave soundtrack by Garoad. Sets a relaxed, nostalgic mood.">
+                VA-11 Hall-A: Cyberpunk Bartender Action
+              </li>
+            </ul>
+          </div>
         </section>
 
-        <!-- Games -->
+        <!-- Games (Standard Layout Unchanged) -->
         <section id="games" class="recs-section">
           <h2>Games</h2>
 
