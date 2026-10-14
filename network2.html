@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scott Frendling // Network Topology</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #0b0f17;
+      color: #c9d1d9;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Topology Viewport & SVG Container */
+    .topology-container {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 100px);
+      background: radial-gradient(circle at center, #111827 0%, #0b0f17 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg.topology-svg {
+      width: 100%;
+      height: 100%;
+      transform-origin: 0 0;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Node & Branch Styles */
+    .topo-node {
+      cursor: pointer;
+      transition: filter 0.3s ease;
+    }
+
+    .topo-node:hover circle {
+      stroke: #58a6ff;
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 12px rgba(88, 166, 255, 0.6));
+    }
+
+    .topo-node circle {
+      fill: #161b22;
+      stroke: #30363d;
+      stroke-width: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .topo-node.active circle {
+      stroke: #3fb950;
+      stroke-width: 3px;
+      fill: #1f2937;
+      filter: drop-shadow(0 0 16px rgba(63, 185, 80, 0.8));
+    }
+
+    .topo-line {
+      stroke: #30363d;
+      stroke-width: 2.5px;
+      fill: none;
+      transition: stroke 0.3s ease;
+    }
+
+    .topo-line.active {
+      stroke: #58a6ff;
+    }
+
+    .node-label {
+      fill: #e6edf3;
+      font-size: 13px;
+      font-weight: 600;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .vlan-label {
+      fill: #8b949e;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    /* Slide-out Detail Drawer */
+    .inspector-drawer {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 420px;
+      height: 100vh;
+      background: #161b22;
+      border-left: 1px solid #30363d;
+      box-shadow: -20px 0 40px rgba(0, 0, 0, 0.6);
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inspector-drawer.open {
+      right: 0;
+    }
+
+    /* Navigation Drawer Overlay */
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100vh;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      transition: left 0.3s ease;
+      z-index: 60;
+      padding: 2rem 1.5rem;
+    }
+
+    .nav-drawer.open {
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 bg-[#0b0f17]/80 backdrop-blur border-b border-[#30363d]">
+    <div class="flex items-center space-x-4">
+      <button id="menuToggle" class="p-2 text-slate-300 hover:text-white focus:outline-none" aria-label="Toggle Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <h1 class="text-lg font-bold tracking-wider text-white">SCOTT FRENDLING // NETWORK TOPOLOGY</h1>
+    </div>
+    <div class="flex items-center space-x-3">
+      <button id="resetView" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-[#21262d] border border-[#30363d] rounded-md hover:bg-[#30363d] hover:text-white transition">
+        Reset View
+      </button>
+    </div>
+  </header>
+
+  <!-- Left Navigation Drawer -->
+  <nav id="navDrawer" class="nav-drawer flex flex-col justify-between">
+    <div>
+      <div class="flex items-center justify-between mb-8">
+        <span class="text-sm font-semibold text-slate-400">NAVIGATION</span>
+        <button id="closeNav" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div class="flex flex-col space-y-3">
+        <a href="/" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Home</a>
+        <a href="/network.html" class="px-3 py-2 rounded-lg text-white bg-[#21262d] border border-[#30363d] font-medium">Network</a>
+        <a href="/resume.html" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Resume</a>
+        <a href="/recs.html" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Recommendations</a>
+      </div>
+    </div>
+    <div class="text-xs text-slate-500">
+      Secure Lab Environment v2.4
+    </div>
+  </nav>
+
+  <main class="topology-container">
+    <svg id="topoSvg" class="topology-svg" viewBox="0 0 1200 750">
+      <defs>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      <!-- Connections / Branches -->
+      <!-- Root to VLAN 1 & VLAN 2 -->
+      <path d="M 600 130 L 350 280" class="topo-line" />
+      <path d="M 600 130 L 850 280" class="topo-line" />
+
+      <!-- VLAN 1 Subtree Connections -->
+      <path d="M 350 330 L 250 450" class="topo-line" />
+      <path d="M 350 330 L 450 450" class="topo-line" />
+
+      <!-- VLAN 2 Subtree Connections -->
+      <path d="M 850 330 L 600 450" class="topo-line" />
+      <path d="M 850 330 L 725 450" class="topo-line" />
+      <path d="M 850 330 L 850 450" class="topo-line" />
+      <path d="M 850 330 L 975 450" class="topo-line" />
+      <path d="M 850 330 L 1100 450" class="topo-line" />
+
+      <!-- VLAN Group Labels -->
+      <text x="310" y="235" class="vlan-label">VLAN 1 (DMZ / Lab)</text>
+      <text x="830" y="235" class="vlan-label">VLAN 2 (Internal Services)</text>
+
+      <!-- Root Node: OPNsense -->
+      <g class="topo-node" data-id="opnsense" transform="translate(600, 90)">
+        <circle r="48" />
+        <text x="0" y="-5" class="node-label">OPN</text>
+        <text x="0" y="12" class="node-label">sense</text>
+      </g>
+
+      <!-- VLAN 1 Branch Nodes -->
+      <g class="topo-node" data-id="kali" transform="translate(250, 480)">
+        <circle r="38" />
+        <text x="0" y="4" class="node-label">Kali</text>
+      </g>
+      <g class="topo-node" data-id="popos" transform="translate(450, 480)">
+        <circle r="38" />
+        <text x="0" y="-3" class="node-label">Pop OS</text>
+      </g>
+
+      <!-- VLAN 2 Branch Nodes -->
+      <g class="topo-node" data-id="arch" transform="translate(600, 480)">
+        <circle r="38" />
+        <text x="0" y="4" class="node-label">Arch</text>
+      </g>
+      <g class="topo-node" data-id="ubuntu" transform="translate(725, 480)">
+        <circle r="38" />
+        <text x="0" y="4" class="node-label">Ubuntu</text>
+      </g>
+      <g class="topo-node" data-id="winserver" transform="translate(850, 480)">
+        <circle r="42" />
+        <text x="0" y="-5" class="node-label">Win</text>
+        <text x="0" y="12" class="node-label">Server</text>
+      </g>
+      <g class="topo-node" data-id="winclient" transform="translate(975, 480)">
+        <circle r="42" />
+        <text x="0" y="-5" class="node-label">Win</text>
+        <text x="0" y="12" class="node-label">Client</text>
+      </g>
+      <g class="topo-node" data-id="rocky" transform="translate(1100, 480)">
+        <circle r="38" />
+        <text x="0" y="-5" class="node-label">Rocky</text>
+        <text x="0" y="10" class="node-label">OS</text>
+      </g>
+    </svg>
+  </main>
+
+  <aside id="inspectorDrawer" class="inspector-drawer">
+    <div class="flex items-center justify-between p-6 border-b border-[#30363d]">
+      <div class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <h3 id="nodeTitle" class="text-lg font-bold text-white">Node Details</h3>
+      </div>
+      <button id="closeInspector" class="text-slate-400 hover:text-white text-2xl font-light">&times;</button>
+    </div>
+    
+    <div class="p-6 space-y-6 overflow-y-auto flex-1">
+      <div>
+        <span class="text-xs font-semibold tracking-wider text-blue-400 uppercase">Purpose & Architecture</span>
+        <p id="nodeDesc" class="mt-2 text-sm text-slate-300 leading-relaxed">Select a network node to inspect hardware specs, firewall rules, and active services.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-[#21262d] p-3 rounded-lg border border-[#30363d]">
+          <span class="text-xs text-slate-400 block">IP Address</span>
+          <span id="nodeIp" class="text-sm font-mono text-white mt-1 block">--</span>
+        </div>
+        <div class="bg-[#21262d] p-3 rounded-lg border border-[#30363d]">
+          <span class="text-xs text-slate-400 block">Subnet / VLAN</span>
+          <span id="nodeVlan" class="text-sm font-mono text-white mt-1 block">--</span>
+        </div>
+      </div>
+
+      <div>
+        <span class="text-xs font-semibold tracking-wider text-blue-400 uppercase">Active Services</span>
+        <ul id="nodeServices" class="mt-2 space-y-2">
+          <!-- Populated dynamically -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="p-4 border-t border-[#30363d] bg-[#0d1117] text-center">
+      <span class="text-xs text-slate-500">Click anywhere on the background to reset view</span>
+    </div>
+  </aside>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const svg = document.getElementById('topoSvg');
+      const drawer = document.getElementById('inspectorDrawer');
+      const closeInspector = document.getElementById('closeInspector');
+      const menuToggle = document.getElementById('menuToggle');
+      const closeNav = document.getElementById('closeNav');
+      const navDrawer = document.getElementById('navDrawer');
+      const resetViewBtn = document.getElementById('resetView');
+
+      const nodeTitle = document.getElementById('nodeTitle');
+      const nodeDesc = document.getElementById('nodeDesc');
+      const nodeIp = document.getElementById('nodeIp');
+      const nodeVlan = document.getElementById('nodeVlan');
+      const nodeServices = document.getElementById('nodeServices');
+
+      // Comprehensive Node Database
+      const db = {
+        'opnsense': {
+          title: 'OPNsense Firewall Gateway',
+          desc: 'Primary perimeter gateway managing multi-WAN failover, inter-VLAN routing policies, GeoIP packet filtering, and intrusion detection.',
+          ip: '192.168.1.1',
+          vlan: 'VLAN 1 & 2 (Gateway)',
+          services: ['Suricata IDS/IPS', 'WireGuard VPN Server', 'Unbound DNS + AdGuard', 'pf-firewall state table']
+        },
+        'kali': {
+          title: 'Kali Linux Pentest Node',
+          desc: 'Dedicated offensive security workstation utilized for internal vulnerability assessments, wireless auditing, and CTF challenges.',
+          ip: '192.168.10.50',
+          vlan: 'VLAN 1 (DMZ Lab)',
+          services: ['Metasploit Framework', 'Burp Suite Pro', 'Nmap & Wireshark', 'Custom Python Exploit Scripts']
+        },
+        'popos': {
+          title: 'Pop!_OS Workstation',
+          desc: 'Primary daily driver and administrative workstation for managing homelab configurations, Git repositories, and container orchestration.',
+          ip: '192.168.10.15',
+          vlan: 'VLAN 1 (DMZ Lab)',
+          services: ['VS Code & Docker CLI', 'Ansible Automation', 'SSH Tunnel Manager', 'Grafana Monitoring Dash']
+        },
+        'arch': {
+          title: 'Arch Linux Node',
+          desc: 'Lightweight rolling-release testing environment and rapid prototyping station for experimental containerized services.',
+          ip: '192.168.20.10',
+          vlan: 'VLAN 2 (Internal LAN)',
+          services: ['Podman Container Engine', 'Systemd-networkd', 'ZFS Storage Pool', 'Custom Kernel Testing']
+        },
+        'ubuntu': {
+          title: 'Ubuntu Server Host',
+          desc: 'Core microservices and monitoring server hosting internal logging stacks, database replicas, and automation cron jobs.',
+          ip: '192.168.20.20',
+          vlan: 'VLAN 2 (Internal LAN)',
+          services: ['Prometheus + Grafana', 'Node Exporter', 'Nginx Reverse Proxy', 'PostgreSQL Database']
+        },
+        'winserver': {
+          title: 'Windows Server Active Directory',
+          desc: 'Enterprise domain controller managing internal identity services, Group Policy Objects (GPOs), Kerberos authentication, and DNS zones.',
+          ip: '192.168.20.100',
+          vlan: 'VLAN 2 (Internal LAN)',
+          services: ['Active Directory DS', 'DNS & DHCP Server', 'AD CS (Certificate Authority)', 'Sysvol Replication']
+        },
+        'winclient': {
+          title: 'Windows 11 Test Client',
+          desc: 'End-user client simulation joined to the Active Directory domain for endpoint detection and response (EDR) telemetry testing.',
+          ip: '192.168.20.105',
+          vlan: 'VLAN 2 (Internal LAN)',
+          services: ['Sysmon Telemetry', 'Defender for Endpoint', 'PowerShell Remoting', 'RDP Session Host']
+        },
+        'rocky': {
+          title: 'Rocky OS Enterprise Node',
+          desc: 'RHEL-compatible enterprise Linux server replicating production environments for enterprise application deployment testing.',
+          ip: '192.168.20.50',
+          vlan: 'VLAN 2 (Internal LAN)',
+          services: ['SELinux Enforcing Mode', 'Apache HTTP Server', 'Firewalld Zones', 'NFS Share Export']
+        }
+      };
+
+      // Navigation Drawer Toggles
+      menuToggle.addEventListener('click', () => navDrawer.classList.add('open'));
+      closeNav.addEventListener('click', () => navDrawer.classList.remove('open'));
+
+      // Node Click Zoom & Inspector Handler
+      document.querySelectorAll('.topo-node').forEach(node => {
+        node.addEventListener('click', (e) => {
+          e.stopPropagation();
+          
+          // Clear active states
+          document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
+          node.classList.add('active');
+
+          const id = node.getAttribute('data-id');
+          const data = db[id];
+
+          if (data) {
+            nodeTitle.textContent = data.title;
+            nodeDesc.textContent = data.desc;
+            nodeIp.textContent = data.ip;
+            nodeVlan.textContent = data.vlan;
+            nodeServices.innerHTML = data.services.map(s => `
+              <li class="flex items-center text-sm text-slate-300 bg-[#21262d] px-3 py-2 rounded-md border border-[#30363d]">
+                <span class="w-2 h-2 bg-blue-400 rounded-full mr-2.5"></span>
+                ${s}
+              </li>
+            `).join('');
+            
+            drawer.classList.add('open');
+          }
+
+          // Calculate transform to zoom and center on clicked node
+          const transform = node.getAttribute('transform');
+          const translateMatch = transform.match(/translate\(([^,]+),\s*([^\)]+)\)/);
+          if (translateMatch) {
+            const x = parseFloat(translateMatch[1]);
+            const y = parseFloat(translateMatch[2]);
+            
+            // ViewBox is 1200x750. Center is (600, 375).
+            const scale = 1.6;
+            const translateX = 600 - (x * scale);
+            const translateY = 375 - (y * scale);
+            
+            svg.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+          }
+        });
+      });
+
+      // Reset View Function
+      const resetView = () => {
+        document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
+        svg.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+        drawer.classList.remove('open');
+      };
+
+      resetViewBtn.addEventListener('click', resetView);
+
+      // Click background to reset
+      document.querySelector('.topology-container').addEventListener('click', (e) => {
+        if (e.target.tagName === 'svg' || e.target.classList.contains('topology-container')) {
+          resetView();
+        }
+      });
+
+      closeInspector.addEventListener('click', () => {
+        drawer.classList.remove('open');
+        document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
+      });
+    });
+  </script>
+</body>
+</html>
