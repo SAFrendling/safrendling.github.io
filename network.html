@@ -220,14 +220,12 @@
       <!-- VLAN 1 Offensive Zone -->
       <rect x="130" y="255" width="380" height="360" rx="16" fill="rgba(248, 81, 73, 0.03)" stroke="rgba(248, 81, 73, 0.28)" stroke-width="1.5" stroke-dasharray="6 6" />
       <text x="320" y="285" fill="#f85149" font-size="13" font-weight="700" letter-spacing="0.08em" text-anchor="middle">VLAN 1 // OFFENSIVE OPERATIONS</text>
-      <text x="320" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Red Team Attack &amp; Enumeration Subnet (192.168.10.0/24)</text>
+      <text x="320" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Red Team Attack &amp; Enumeration Subnet (192.168.1.0/24)</text>
 
       <!-- VLAN 2 Security Sandbox Zone -->
       <rect x="540" y="255" width="590" height="360" rx="16" fill="rgba(63, 185, 80, 0.03)" stroke="rgba(63, 185, 80, 0.28)" stroke-width="1.5" stroke-dasharray="6 6" />
       <text x="835" y="285" fill="#3fb950" font-size="13" font-weight="700" letter-spacing="0.08em" text-anchor="middle">VLAN 2 // SECURITY SANDBOX</text>
-      <text x="835" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Target Range, SIEM Monitoring &amp; Hardening Environment (192.168.20.0/24)</text>
-
-      <!-- Network Trunk & Branch Lines -->
+      <text x="835" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Target Range, SIEM Monitoring &amp; Hardening Environment (10.10.10.0/24)</text>      <!-- Network Trunk & Branch Lines -->
       <!-- OPNsense to VLAN 1 & VLAN 2 Hubs -->
       <path d="M 600 165 L 320 345" class="topo-line-base" />
       <path d="M 600 165 L 320 345" class="topo-line-flow flow-offensive" />
@@ -453,15 +451,15 @@
           desc: 'Primary perimeter gateway enforcing strict inter-VLAN firewall policies, isolating offensive traffic on VLAN 1 from controlled target ranges on VLAN 2.',
           ip: '192.168.1.1',
           vlan: 'Gateway / Inter-VLAN Router',
-          services: ['Suricata IDS/IPS', 'WireGuard VPN', 'Unbound DNS', 'Stateful Packet Filtering']
+          services: ['Suricata IDS/IPS', 'VLAN Routing', 'Unbound DNS', 'Stateful Packet Filtering']
         },
         'kali': {
           title: 'Kali Linux Attack Node',
           zoneColor: 'bg-red-500',
           img: '',
           imgHint: 'Recommended: Nmap scan output, Burp Suite, or Metasploit session',
-          desc: 'Dedicated offensive operations box used to launch controlled penetration tests, web app fuzzing, and network enumeration against VLAN 2 targets.',
-          ip: '192.168.10.50',
+          desc: 'Dedicated offensive operations box used to launch controlled penetration tests, web app fuzzing, and network enumeration against VLAN 2 targets and boxes.',
+          ip: '192.168.1.102',
           vlan: 'VLAN 1 (Offensive Ops)',
           services: ['Metasploit Framework', 'Burp Suite', 'Nmap & Nikto', 'Custom Python/Bash Scripts']
         },
@@ -470,30 +468,30 @@
           zoneColor: 'bg-red-500',
           img: '',
           imgHint: 'Recommended: Offensive scripting workspace or SSH tunnel layout',
-          desc: 'Secondary Linux workstation for offensive payload development, traffic interception analysis, and multi-terminal lab orchestration.',
-          ip: '192.168.10.15',
-          vlan: 'VLAN 1 (Offensive Ops)',
-          services: ['Wireshark Capture', 'SSH Tunneling', 'Docker Containers', 'Exploit Dev Environment']
+          desc: 'Secondary Linux workstation for local network testing, and VLAN 1 monitoring.',
+          ip: '192.168.1.103',
+          vlan: 'VLAN 1 (VLAN Monitor)',
+          services: ['Hard Drive Encryption', 'SSH Tunneling', 'Docker Containers', 'Exploit Dev Environment']
         },
         'arch': {
           title: 'Arch Linux Sandbox Node',
           zoneColor: 'bg-emerald-500',
           img: '',
           imgHint: 'Recommended: Wazuh agent telemetry or hardened systemd config',
-          desc: 'Minimalist rolling-release sandbox target configured to test kernel hardening, container escape scenarios, and host-based intrusion alerts.',
-          ip: '192.168.20.10',
+          desc: 'Minimalist rolling-release sandbox target configured to deepen Linux knowledge',
+          ip: '10.10.10.103',
           vlan: 'VLAN 2 (Security Sandbox)',
           services: ['Wazuh SIEM Agent', 'Podman Containers', 'iptables Host Firewall', 'Auditd Logging']
         },
         'ubuntu': {
-          title: 'Ubuntu SIEM & Monitoring Server',
+          title: 'Ubuntu CLI and Docker host',
           zoneColor: 'bg-emerald-500',
           img: '',
           imgHint: 'Recommended: Wazuh SIEM dashboard or Grafana telemetry graph',
           desc: 'Centralized defensive visibility hub ingesting security logs, endpoint telemetry, and attack alerts across the sandbox environment.',
-          ip: '192.168.20.20',
+          ip: '10.10.10.101',
           vlan: 'VLAN 2 (Security Sandbox)',
-          services: ['Wazuh Manager / Indexer', 'Grafana + InfluxDB', 'Syslog Aggregator', 'Vulnerable Web Targets']
+          services: ['Wazuh SIEM Agent', 'Docker', 'Shodan', 'Spiderfoot']
         },
         'winserver': {
           title: 'Windows Server Domain Controller',
@@ -501,9 +499,9 @@
           img: '',
           imgHint: 'Recommended: Active Directory Users & Computers or GPO hardening view',
           desc: 'Simulated enterprise Active Directory target used to practice Kerberoasting defense, Group Policy hardening, and authentication log monitoring.',
-          ip: '192.168.20.100',
+          ip: '10.10.10.104',
           vlan: 'VLAN 2 (Security Sandbox)',
-          services: ['Active Directory DS', 'DNS & DHCP', 'Wazuh Windows Agent', 'Windows Event Forwarding']
+          services: ['Active Directory DS', 'DNS & DHCP', 'Wazuh SIEM Agent', 'Windows Event Forwarding']
         },
         'winclient': {
           title: 'Windows 11 Endpoint Target',
@@ -511,9 +509,9 @@
           img: '',
           imgHint: 'Recommended: Sysmon event logs or Defender alert timeline',
           desc: 'Domain-joined workstation target simulating end-user activity to test lateral movement detection and Sysmon telemetry rules.',
-          ip: '192.168.20.105',
+          ip: '10.10.10.105',
           vlan: 'VLAN 2 (Security Sandbox)',
-          services: ['Sysmon Telemetry', 'Wazuh Endpoint Agent', 'Windows Defender', 'PowerShell Logging']
+          services: ['Sysmon Telemetry', 'Wazuh SIEM Agent', 'Windows Defender', 'PowerShell Logging']
         },
         'rocky': {
           title: 'Rocky Linux Enterprise Target',
@@ -521,9 +519,9 @@
           img: '',
           imgHint: 'Recommended: SELinux status or Apache/SSH hardening terminal',
           desc: 'RHEL-compatible enterprise target server used for testing SELinux enforcement, SSH hardening, and web service vulnerability remediation.',
-          ip: '192.168.20.50',
+          ip: '10.10.10.102',
           vlan: 'VLAN 2 (Security Sandbox)',
-          services: ['SELinux Enforcing', 'Apache HTTP Server', 'Firewalld', 'Wazuh Agent']
+          services: ['Wazuh SIEM Controller', 'Firewalld', 'SELinux Enforcing', 'SSHd']
         }
       };
 
