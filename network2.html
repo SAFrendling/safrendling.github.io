@@ -7,18 +7,23 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #0b0f17;
+      background-color: #090d16;
       color: #c9d1d9;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
+      margin: 0;
     }
 
-    /* Topology Viewport & SVG Container */
+    /* Blueprint Tech Grid Background */
     .topology-container {
       position: relative;
-      width: 100%;
-      height: calc(100vh - 100px);
-      background: radial-gradient(circle at center, #111827 0%, #0b0f17 100%);
+      width: 100vw;
+      height: 100vh;
+      background-color: #090d16;
+      background-image: 
+        radial-gradient(rgba(88, 166, 255, 0.14) 1px, transparent 1px),
+        radial-gradient(circle at 50% 35%, #131c2e 0%, #090d16 75%);
+      background-size: 28px 28px, 100% 100%;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -29,91 +34,126 @@
       width: 100%;
       height: 100%;
       transform-origin: 0 0;
-      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Node & Branch Styles */
+    /* Animated Network Traffic Lines */
+    .topo-line-base {
+      stroke: #212936;
+      stroke-width: 3px;
+      fill: none;
+    }
+
+    .topo-line-flow {
+      stroke-width: 2px;
+      fill: none;
+      stroke-dasharray: 6 10;
+      animation: packetFlow 1.8s linear infinite;
+      opacity: 0.75;
+    }
+
+    .flow-offensive { stroke: #f85149; }
+    .flow-sandbox { stroke: #3fb950; }
+    .flow-gateway { stroke: #58a6ff; }
+
+    @keyframes packetFlow {
+      to { stroke-dashoffset: -32; }
+    }
+
+    /* Node Styling */
     .topo-node {
       cursor: pointer;
-      transition: filter 0.3s ease;
     }
 
-    .topo-node:hover circle {
-      stroke: #58a6ff;
-      stroke-width: 3px;
-      filter: drop-shadow(0 0 12px rgba(88, 166, 255, 0.6));
-    }
-
-    .topo-node circle {
-      fill: #161b22;
-      stroke: #30363d;
-      stroke-width: 2px;
-      transition: all 0.3s ease;
-    }
-
-    .topo-node.active circle {
-      stroke: #3fb950;
-      stroke-width: 3px;
-      fill: #1f2937;
-      filter: drop-shadow(0 0 16px rgba(63, 185, 80, 0.8));
-    }
-
-    .topo-line {
+    .topo-node .node-bg {
+      fill: #121824;
       stroke: #30363d;
       stroke-width: 2.5px;
-      fill: none;
-      transition: stroke 0.3s ease;
+      transition: all 0.25s ease;
     }
 
-    .topo-line.active {
+    .topo-node:hover .node-bg {
+      fill: #1a2333;
       stroke: #58a6ff;
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 14px rgba(88, 166, 255, 0.55));
+    }
+
+    .topo-node.vlan1-node:hover .node-bg {
+      stroke: #f85149;
+      filter: drop-shadow(0 0 14px rgba(248, 81, 73, 0.55));
+    }
+
+    .topo-node.vlan2-node:hover .node-bg {
+      stroke: #3fb950;
+      filter: drop-shadow(0 0 14px rgba(63, 185, 80, 0.55));
     }
 
     .node-label {
       fill: #e6edf3;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       text-anchor: middle;
       pointer-events: none;
+      letter-spacing: 0.02em;
     }
 
-    .vlan-label {
+    .node-sub {
       fill: #8b949e;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-size: 10px;
+      font-family: monospace;
       text-anchor: middle;
       pointer-events: none;
     }
 
-    /* Slide-out Detail Drawer */
-    .inspector-drawer {
+    /* Centered Modal Overlay (Covers zoomed node cleanly) */
+    .modal-backdrop {
       position: fixed;
-      top: 0;
-      right: -450px;
-      width: 420px;
-      height: 100vh;
-      background: #161b22;
-      border-left: 1px solid #30363d;
-      box-shadow: -20px 0 40px rgba(0, 0, 0, 0.6);
-      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      inset: 0;
+      background: rgba(6, 9, 15, 0.82);
+      backdrop-filter: blur(6px);
       z-index: 50;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .node-modal {
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      background: #131924;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(88, 166, 255, 0.15);
+      display: flex;
       flex-direction: column;
+      overflow: hidden;
+      transform: scale(0.92) translateY(10px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .inspector-drawer.open {
-      right: 0;
+    .modal-backdrop.open .node-modal {
+      transform: scale(1) translateY(0);
     }
 
-    /* Navigation Drawer Overlay */
+    /* Navigation Drawer */
     .nav-drawer {
       position: fixed;
       top: 0;
       left: -280px;
       width: 280px;
       height: 100vh;
-      background: #161b22;
+      background: #131924;
       border-right: 1px solid #30363d;
       transition: left 0.3s ease;
       z-index: 60;
@@ -127,17 +167,27 @@
 </head>
 <body>
 
-  <header class="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 bg-[#0b0f17]/80 backdrop-blur border-b border-[#30363d]">
+  <!-- Top Header -->
+  <header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 bg-[#090d16]/85 backdrop-blur-md border-b border-[#212936]">
     <div class="flex items-center space-x-4">
-      <button id="menuToggle" class="p-2 text-slate-300 hover:text-white focus:outline-none" aria-label="Toggle Menu">
+      <button id="menuToggle" class="p-2 text-slate-300 hover:text-white rounded-lg hover:bg-[#1c2331] transition focus:outline-none" aria-label="Toggle Menu">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
-      <h1 class="text-lg font-bold tracking-wider text-white">SCOTT FRENDLING // NETWORK TOPOLOGY</h1>
+      <div>
+        <h1 class="text-base sm:text-lg font-bold tracking-wider text-white">SCOTT FRENDLING // LAB TOPOLOGY</h1>
+        <p class="text-xs text-slate-400 hidden sm:block">Click any node to inspect architecture, telemetry &amp; active services</p>
+      </div>
     </div>
-    <div class="flex items-center space-x-3">
-      <button id="resetView" class="px-3 py-1.5 text-xs font-medium text-slate-300 bg-[#21262d] border border-[#30363d] rounded-md hover:bg-[#30363d] hover:text-white transition">
+
+    <!-- Legend & Reset -->
+    <div class="flex items-center space-x-4">
+      <div class="hidden md:flex items-center space-x-4 text-xs text-slate-400 mr-2">
+        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-[#f85149] mr-1.5"></span>Offensive</span>
+        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-[#3fb950] mr-1.5"></span>Sandbox</span>
+      </div>
+      <button id="resetView" class="px-3.5 py-1.5 text-xs font-semibold text-slate-200 bg-[#1c2331] border border-[#30363d] rounded-md hover:border-[#58a6ff] hover:text-white transition">
         Reset View
       </button>
     </div>
@@ -147,278 +197,410 @@
   <nav id="navDrawer" class="nav-drawer flex flex-col justify-between">
     <div>
       <div class="flex items-center justify-between mb-8">
-        <span class="text-sm font-semibold text-slate-400">NAVIGATION</span>
-        <button id="closeNav" class="text-slate-400 hover:text-white">&times;</button>
+        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Navigation</span>
+        <button id="closeNav" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
       </div>
-      <div class="flex flex-col space-y-3">
-        <a href="/" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Home</a>
-        <a href="/network.html" class="px-3 py-2 rounded-lg text-white bg-[#21262d] border border-[#30363d] font-medium">Network</a>
-        <a href="/resume.html" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Resume</a>
-        <a href="/recs.html" class="px-3 py-2 rounded-lg text-slate-300 hover:bg-[#21262d] hover:text-white transition">Recommendations</a>
+      <div class="flex flex-col space-y-2">
+        <a href="/" class="px-3 py-2.5 rounded-lg text-slate-300 hover:bg-[#1c2331] hover:text-white transition">Home</a>
+        <a href="/network" class="px-3 py-2.5 rounded-lg text-white bg-[#1c2331] border border-[#30363d] font-medium">Network</a>
+        <a href="/resume" class="px-3 py-2.5 rounded-lg text-slate-300 hover:bg-[#1c2331] hover:text-white transition">Resume</a>
+        <a href="/recs" class="px-3 py-2.5 rounded-lg text-slate-300 hover:bg-[#1c2331] hover:text-white transition">Recommendations</a>
       </div>
     </div>
-    <div class="text-xs text-slate-500">
-      Secure Lab Environment v2.4
+    <div class="text-xs text-slate-500 font-mono">
+      OPNsense Segmented Lab
     </div>
   </nav>
 
+  <!-- Interactive SVG Canvas -->
   <main class="topology-container">
-    <svg id="topoSvg" class="topology-svg" viewBox="0 0 1200 750">
-      <defs>
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
+    <svg id="topoSvg" class="topology-svg" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- VLAN Zone Bounding Containers -->
+      <!-- VLAN 1 Offensive Zone -->
+      <rect x="130" y="255" width="380" height="360" rx="16" fill="rgba(248, 81, 73, 0.03)" stroke="rgba(248, 81, 73, 0.28)" stroke-width="1.5" stroke-dasharray="6 6" />
+      <text x="320" y="285" fill="#f85149" font-size="13" font-weight="700" letter-spacing="0.08em" text-anchor="middle">VLAN 1 // OFFENSIVE OPERATIONS</text>
+      <text x="320" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Red Team Attack &amp; Enumeration Subnet (192.168.10.0/24)</text>
 
-      <!-- Connections / Branches -->
-      <!-- Root to VLAN 1 & VLAN 2 -->
-      <path d="M 600 130 L 350 280" class="topo-line" />
-      <path d="M 600 130 L 850 280" class="topo-line" />
+      <!-- VLAN 2 Security Sandbox Zone -->
+      <rect x="540" y="255" width="590" height="360" rx="16" fill="rgba(63, 185, 80, 0.03)" stroke="rgba(63, 185, 80, 0.28)" stroke-width="1.5" stroke-dasharray="6 6" />
+      <text x="835" y="285" fill="#3fb950" font-size="13" font-weight="700" letter-spacing="0.08em" text-anchor="middle">VLAN 2 // SECURITY SANDBOX</text>
+      <text x="835" y="303" fill="#8b949e" font-size="11" text-anchor="middle">Target Range, SIEM Monitoring &amp; Hardening Environment (192.168.20.0/24)</text>
 
-      <!-- VLAN 1 Subtree Connections -->
-      <path d="M 350 330 L 250 450" class="topo-line" />
-      <path d="M 350 330 L 450 450" class="topo-line" />
+      <!-- Network Trunk & Branch Lines -->
+      <!-- OPNsense to VLAN 1 & VLAN 2 Hubs -->
+      <path d="M 600 165 L 320 345" class="topo-line-base" />
+      <path d="M 600 165 L 320 345" class="topo-line-flow flow-offensive" />
 
-      <!-- VLAN 2 Subtree Connections -->
-      <path d="M 850 330 L 600 450" class="topo-line" />
-      <path d="M 850 330 L 725 450" class="topo-line" />
-      <path d="M 850 330 L 850 450" class="topo-line" />
-      <path d="M 850 330 L 975 450" class="topo-line" />
-      <path d="M 850 330 L 1100 450" class="topo-line" />
+      <path d="M 600 165 L 835 345" class="topo-line-base" />
+      <path d="M 600 165 L 835 345" class="topo-line-flow flow-sandbox" />
 
-      <!-- VLAN Group Labels -->
-      <text x="310" y="235" class="vlan-label">VLAN 1 (DMZ / Lab)</text>
-      <text x="830" y="235" class="vlan-label">VLAN 2 (Internal Services)</text>
+      <!-- VLAN 1 Hub to Nodes -->
+      <path d="M 320 345 L 235 495" class="topo-line-base" />
+      <path d="M 320 345 L 235 495" class="topo-line-flow flow-offensive" />
+      <path d="M 320 345 L 405 495" class="topo-line-base" />
+      <path d="M 320 345 L 405 495" class="topo-line-flow flow-offensive" />
+
+      <!-- VLAN 2 Hub to Nodes -->
+      <path d="M 835 345 L 605 495" class="topo-line-base" />
+      <path d="M 835 345 L 605 495" class="topo-line-flow flow-sandbox" />
+
+      <path d="M 835 345 L 720 495" class="topo-line-base" />
+      <path d="M 835 345 L 720 495" class="topo-line-flow flow-sandbox" />
+
+      <path d="M 835 345 L 835 495" class="topo-line-base" />
+      <path d="M 835 345 L 835 495" class="topo-line-flow flow-sandbox" />
+
+      <path d="M 835 345 L 950 495" class="topo-line-base" />
+      <path d="M 835 345 L 950 495" class="topo-line-flow flow-sandbox" />
+
+      <path d="M 835 345 L 1065 495" class="topo-line-base" />
+      <path d="M 835 345 L 1065 495" class="topo-line-flow flow-sandbox" />
+
+      <!-- Virtual Switch Junction Dots -->
+      <circle cx="320" cy="345" r="6" fill="#f85149" />
+      <circle cx="835" cy="345" r="6" fill="#3fb950" />
+
+      <!-- ================= NODES WITH CUSTOM SVG ICONS ================= -->
 
       <!-- Root Node: OPNsense -->
-      <g class="topo-node" data-id="opnsense" transform="translate(600, 90)">
-        <circle r="48" />
-        <text x="0" y="-5" class="node-label">OPN</text>
-        <text x="0" y="12" class="node-label">sense</text>
+      <g class="topo-node" data-id="opnsense" transform="translate(600, 125)">
+        <circle class="node-bg" r="46" />
+        <!-- Firewall / Shield Icon -->
+        <g transform="translate(-14, -22)" stroke="#58a6ff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2L3 7v6c0 6.5 4.7 12.6 11 14 6.3-1.4 11-7.5 11-14V7L14 2z"/>
+          <path d="M9 12h10M9 16h6"/>
+        </g>
+        <text x="0" y="18" class="node-label">OPNsense</text>
+        <text x="0" y="31" class="node-sub">.1.1</text>
       </g>
 
-      <!-- VLAN 1 Branch Nodes -->
-      <g class="topo-node" data-id="kali" transform="translate(250, 480)">
-        <circle r="38" />
-        <text x="0" y="4" class="node-label">Kali</text>
-      </g>
-      <g class="topo-node" data-id="popos" transform="translate(450, 480)">
-        <circle r="38" />
-        <text x="0" y="-3" class="node-label">Pop OS</text>
+      <!-- VLAN 1: Kali Linux -->
+      <g class="topo-node vlan1-node" data-id="kali" transform="translate(235, 515)">
+        <circle class="node-bg" r="42" />
+        <!-- Terminal / Sword Icon -->
+        <g transform="translate(-12, -22)" stroke="#f85149" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </g>
+        <text x="0" y="15" class="node-label">Kali Linux</text>
+        <text x="0" y="28" class="node-sub">.10.50</text>
       </g>
 
-      <!-- VLAN 2 Branch Nodes -->
-      <g class="topo-node" data-id="arch" transform="translate(600, 480)">
-        <circle r="38" />
-        <text x="0" y="4" class="node-label">Arch</text>
+      <!-- VLAN 1: Pop!_OS -->
+      <g class="topo-node vlan1-node" data-id="popos" transform="translate(405, 515)">
+        <circle class="node-bg" r="42" />
+        <!-- Command Workstation Icon -->
+        <g transform="translate(-12, -22)" stroke="#f85149" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </g>
+        <text x="0" y="15" class="node-label">Pop!_OS</text>
+        <text x="0" y="28" class="node-sub">.10.15</text>
       </g>
-      <g class="topo-node" data-id="ubuntu" transform="translate(725, 480)">
-        <circle r="38" />
-        <text x="0" y="4" class="node-label">Ubuntu</text>
+
+      <!-- VLAN 2: Arch Linux -->
+      <g class="topo-node vlan2-node" data-id="arch" transform="translate(605, 515)">
+        <circle class="node-bg" r="40" />
+        <!-- Container / Box Icon -->
+        <g transform="translate(-12, -22)" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </g>
+        <text x="0" y="15" class="node-label">Arch</text>
+        <text x="0" y="28" class="node-sub">.20.10</text>
       </g>
-      <g class="topo-node" data-id="winserver" transform="translate(850, 480)">
-        <circle r="42" />
-        <text x="0" y="-5" class="node-label">Win</text>
-        <text x="0" y="12" class="node-label">Server</text>
+
+      <!-- VLAN 2: Ubuntu Server -->
+      <g class="topo-node vlan2-node" data-id="ubuntu" transform="translate(720, 515)">
+        <circle class="node-bg" r="40" />
+        <!-- Server Stack Icon -->
+        <g transform="translate(-12, -22)" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6.01" y2="6"></line>
+          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        </g>
+        <text x="0" y="15" class="node-label">Ubuntu</text>
+        <text x="0" y="28" class="node-sub">.20.20</text>
       </g>
-      <g class="topo-node" data-id="winclient" transform="translate(975, 480)">
-        <circle r="42" />
-        <text x="0" y="-5" class="node-label">Win</text>
-        <text x="0" y="12" class="node-label">Client</text>
+
+      <!-- VLAN 2: Windows Server -->
+      <g class="topo-node vlan2-node" data-id="winserver" transform="translate(835, 515)">
+        <circle class="node-bg" r="40" />
+        <!-- Active Directory / Domain Grid Icon -->
+        <g transform="translate(-12, -22)" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </g>
+        <text x="0" y="15" class="node-label">Win Server</text>
+        <text x="0" y="28" class="node-sub">.20.100</text>
       </g>
-      <g class="topo-node" data-id="rocky" transform="translate(1100, 480)">
-        <circle r="38" />
-        <text x="0" y="-5" class="node-label">Rocky</text>
-        <text x="0" y="10" class="node-label">OS</text>
+
+      <!-- VLAN 2: Windows Client -->
+      <g class="topo-node vlan2-node" data-id="winclient" transform="translate(950, 515)">
+        <circle class="node-bg" r="40" />
+        <!-- Endpoint Laptop Icon -->
+        <g transform="translate(-12, -22)" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"></path>
+        </g>
+        <text x="0" y="15" class="node-label">Win Client</text>
+        <text x="0" y="28" class="node-sub">.20.105</text>
       </g>
+
+      <!-- VLAN 2: Rocky OS -->
+      <g class="topo-node vlan2-node" data-id="rocky" transform="translate(1065, 515)">
+        <circle class="node-bg" r="40" />
+        <!-- Hardened Shield/Lock Icon -->
+        <g transform="translate(-12, -22)" stroke="#3fb950" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </g>
+        <text x="0" y="15" class="node-label">Rocky OS</text>
+        <text x="0" y="28" class="node-sub">.20.50</text>
+      </g>
+
     </svg>
   </main>
 
-  <aside id="inspectorDrawer" class="inspector-drawer">
-    <div class="flex items-center justify-between p-6 border-b border-[#30363d]">
-      <div class="flex items-center space-x-3">
-        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
-        <h3 id="nodeTitle" class="text-lg font-bold text-white">Node Details</h3>
-      </div>
-      <button id="closeInspector" class="text-slate-400 hover:text-white text-2xl font-light">&times;</button>
-    </div>
-    
-    <div class="p-6 space-y-6 overflow-y-auto flex-1">
-      <div>
-        <span class="text-xs font-semibold tracking-wider text-blue-400 uppercase">Purpose & Architecture</span>
-        <p id="nodeDesc" class="mt-2 text-sm text-slate-300 leading-relaxed">Select a network node to inspect hardware specs, firewall rules, and active services.</p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-[#21262d] p-3 rounded-lg border border-[#30363d]">
-          <span class="text-xs text-slate-400 block">IP Address</span>
-          <span id="nodeIp" class="text-sm font-mono text-white mt-1 block">--</span>
+  <!-- Centered Opaque Popup Modal (Appears directly over zoomed node) -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="node-modal" id="nodeModal">
+      <!-- Modal Top Bar -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-[#263042] bg-[#0e131c]">
+        <div class="flex items-center space-x-3">
+          <span id="modalStatusDot" class="w-3 h-3 rounded-full bg-blue-500"></span>
+          <h3 id="nodeTitle" class="text-lg font-bold text-white tracking-wide">Node Title</h3>
         </div>
-        <div class="bg-[#21262d] p-3 rounded-lg border border-[#30363d]">
-          <span class="text-xs text-slate-400 block">Subnet / VLAN</span>
-          <span id="nodeVlan" class="text-sm font-mono text-white mt-1 block">--</span>
+        <button id="closeModal" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-[#212936] text-2xl leading-none transition" aria-label="Close modal">
+          &times;
+        </button>
+      </div>
+
+      <!-- Modal Scrollable Content -->
+      <div class="p-6 overflow-y-auto space-y-5">
+        
+        <!-- Placeholder Image / Screenshot Showcase -->
+        <div class="relative w-full h-48 sm:h-56 rounded-lg overflow-hidden border border-[#2a3446] bg-[#0b0f17] flex items-center justify-center">
+          <img id="nodeImage" src="" alt="Node Screenshot" class="w-full h-full object-cover hidden" />
+          <div id="nodeImagePlaceholder" class="text-center p-4">
+            <svg class="w-10 h-10 text-slate-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-xs font-mono text-slate-500">SCREENSHOT / TELEMETRY PREVIEW PLACEHOLDER</p>
+            <p id="nodeImageHint" class="text-[11px] text-slate-600 mt-1">Drop an image path in the JS object to display here</p>
+          </div>
+        </div>
+
+        <!-- Metadata Pills -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-[#0e131c] p-3 rounded-lg border border-[#263042]">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 block">Static IPv4</span>
+            <span id="nodeIp" class="text-sm font-mono font-semibold text-white mt-0.5 block">--</span>
+          </div>
+          <div class="bg-[#0e131c] p-3 rounded-lg border border-[#263042]">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 block">Network Zone</span>
+            <span id="nodeVlan" class="text-sm font-mono font-semibold text-white mt-0.5 block">--</span>
+          </div>
+        </div>
+
+        <!-- Architecture & Purpose -->
+        <div>
+          <span class="text-xs font-bold tracking-wider text-blue-400 uppercase">Role &amp; Architecture</span>
+          <p id="nodeDesc" class="mt-1.5 text-sm text-slate-300 leading-relaxed"></p>
+        </div>
+
+        <!-- Active Services -->
+        <div>
+          <span class="text-xs font-bold tracking-wider text-blue-400 uppercase">Active Services &amp; Tooling</span>
+          <ul id="nodeServices" class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2"></ul>
         </div>
       </div>
-
-      <div>
-        <span class="text-xs font-semibold tracking-wider text-blue-400 uppercase">Active Services</span>
-        <ul id="nodeServices" class="mt-2 space-y-2">
-          <!-- Populated dynamically -->
-        </ul>
-      </div>
     </div>
-
-    <div class="p-4 border-t border-[#30363d] bg-[#0d1117] text-center">
-      <span class="text-xs text-slate-500">Click anywhere on the background to reset view</span>
-    </div>
-  </aside>
+  </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const svg = document.getElementById('topoSvg');
-      const drawer = document.getElementById('inspectorDrawer');
-      const closeInspector = document.getElementById('closeInspector');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const closeModalBtn = document.getElementById('closeModal');
+      const resetViewBtn = document.getElementById('resetView');
       const menuToggle = document.getElementById('menuToggle');
       const closeNav = document.getElementById('closeNav');
       const navDrawer = document.getElementById('navDrawer');
-      const resetViewBtn = document.getElementById('resetView');
 
       const nodeTitle = document.getElementById('nodeTitle');
+      const modalStatusDot = document.getElementById('modalStatusDot');
       const nodeDesc = document.getElementById('nodeDesc');
       const nodeIp = document.getElementById('nodeIp');
       const nodeVlan = document.getElementById('nodeVlan');
       const nodeServices = document.getElementById('nodeServices');
+      const nodeImage = document.getElementById('nodeImage');
+      const nodeImagePlaceholder = document.getElementById('nodeImagePlaceholder');
+      const nodeImageHint = document.getElementById('nodeImageHint');
 
-      // Comprehensive Node Database
+      // Node Configuration Database (Add image URLs to `img` whenever ready)
       const db = {
         'opnsense': {
           title: 'OPNsense Firewall Gateway',
-          desc: 'Primary perimeter gateway managing multi-WAN failover, inter-VLAN routing policies, GeoIP packet filtering, and intrusion detection.',
+          zoneColor: 'bg-blue-500',
+          img: '', // e.g., '/assets/img/opnsense-rules.png'
+          imgHint: 'Recommended: OPNsense firewall rules or Suricata dashboard screenshot',
+          desc: 'Primary perimeter gateway enforcing strict inter-VLAN firewall policies, isolating offensive traffic on VLAN 1 from controlled target ranges on VLAN 2.',
           ip: '192.168.1.1',
-          vlan: 'VLAN 1 & 2 (Gateway)',
-          services: ['Suricata IDS/IPS', 'WireGuard VPN Server', 'Unbound DNS + AdGuard', 'pf-firewall state table']
+          vlan: 'Gateway / Inter-VLAN Router',
+          services: ['Suricata IDS/IPS', 'WireGuard VPN', 'Unbound DNS', 'Stateful Packet Filtering']
         },
         'kali': {
-          title: 'Kali Linux Pentest Node',
-          desc: 'Dedicated offensive security workstation utilized for internal vulnerability assessments, wireless auditing, and CTF challenges.',
+          title: 'Kali Linux Attack Node',
+          zoneColor: 'bg-red-500',
+          img: '',
+          imgHint: 'Recommended: Nmap scan output, Burp Suite, or Metasploit session',
+          desc: 'Dedicated offensive operations box used to launch controlled penetration tests, web app fuzzing, and network enumeration against VLAN 2 targets.',
           ip: '192.168.10.50',
-          vlan: 'VLAN 1 (DMZ Lab)',
-          services: ['Metasploit Framework', 'Burp Suite Pro', 'Nmap & Wireshark', 'Custom Python Exploit Scripts']
+          vlan: 'VLAN 1 (Offensive Ops)',
+          services: ['Metasploit Framework', 'Burp Suite', 'Nmap & Nikto', 'Custom Python/Bash Scripts']
         },
         'popos': {
-          title: 'Pop!_OS Workstation',
-          desc: 'Primary daily driver and administrative workstation for managing homelab configurations, Git repositories, and container orchestration.',
+          title: 'Pop!_OS Command Workstation',
+          zoneColor: 'bg-red-500',
+          img: '',
+          imgHint: 'Recommended: Offensive scripting workspace or SSH tunnel layout',
+          desc: 'Secondary Linux workstation for offensive payload development, traffic interception analysis, and multi-terminal lab orchestration.',
           ip: '192.168.10.15',
-          vlan: 'VLAN 1 (DMZ Lab)',
-          services: ['VS Code & Docker CLI', 'Ansible Automation', 'SSH Tunnel Manager', 'Grafana Monitoring Dash']
+          vlan: 'VLAN 1 (Offensive Ops)',
+          services: ['Wireshark Capture', 'SSH Tunneling', 'Docker Containers', 'Exploit Dev Environment']
         },
         'arch': {
-          title: 'Arch Linux Node',
-          desc: 'Lightweight rolling-release testing environment and rapid prototyping station for experimental containerized services.',
+          title: 'Arch Linux Sandbox Node',
+          zoneColor: 'bg-emerald-500',
+          img: '',
+          imgHint: 'Recommended: Wazuh agent telemetry or hardened systemd config',
+          desc: 'Minimalist rolling-release sandbox target configured to test kernel hardening, container escape scenarios, and host-based intrusion alerts.',
           ip: '192.168.20.10',
-          vlan: 'VLAN 2 (Internal LAN)',
-          services: ['Podman Container Engine', 'Systemd-networkd', 'ZFS Storage Pool', 'Custom Kernel Testing']
+          vlan: 'VLAN 2 (Security Sandbox)',
+          services: ['Wazuh SIEM Agent', 'Podman Containers', 'iptables Host Firewall', 'Auditd Logging']
         },
         'ubuntu': {
-          title: 'Ubuntu Server Host',
-          desc: 'Core microservices and monitoring server hosting internal logging stacks, database replicas, and automation cron jobs.',
+          title: 'Ubuntu SIEM & Monitoring Server',
+          zoneColor: 'bg-emerald-500',
+          img: '',
+          imgHint: 'Recommended: Wazuh SIEM dashboard or Grafana telemetry graph',
+          desc: 'Centralized defensive visibility hub ingesting security logs, endpoint telemetry, and attack alerts across the sandbox environment.',
           ip: '192.168.20.20',
-          vlan: 'VLAN 2 (Internal LAN)',
-          services: ['Prometheus + Grafana', 'Node Exporter', 'Nginx Reverse Proxy', 'PostgreSQL Database']
+          vlan: 'VLAN 2 (Security Sandbox)',
+          services: ['Wazuh Manager / Indexer', 'Grafana + InfluxDB', 'Syslog Aggregator', 'Vulnerable Web Targets']
         },
         'winserver': {
-          title: 'Windows Server Active Directory',
-          desc: 'Enterprise domain controller managing internal identity services, Group Policy Objects (GPOs), Kerberos authentication, and DNS zones.',
+          title: 'Windows Server Domain Controller',
+          zoneColor: 'bg-emerald-500',
+          img: '',
+          imgHint: 'Recommended: Active Directory Users & Computers or GPO hardening view',
+          desc: 'Simulated enterprise Active Directory target used to practice Kerberoasting defense, Group Policy hardening, and authentication log monitoring.',
           ip: '192.168.20.100',
-          vlan: 'VLAN 2 (Internal LAN)',
-          services: ['Active Directory DS', 'DNS & DHCP Server', 'AD CS (Certificate Authority)', 'Sysvol Replication']
+          vlan: 'VLAN 2 (Security Sandbox)',
+          services: ['Active Directory DS', 'DNS & DHCP', 'Wazuh Windows Agent', 'Windows Event Forwarding']
         },
         'winclient': {
-          title: 'Windows 11 Test Client',
-          desc: 'End-user client simulation joined to the Active Directory domain for endpoint detection and response (EDR) telemetry testing.',
+          title: 'Windows 11 Endpoint Target',
+          zoneColor: 'bg-emerald-500',
+          img: '',
+          imgHint: 'Recommended: Sysmon event logs or Defender alert timeline',
+          desc: 'Domain-joined workstation target simulating end-user activity to test lateral movement detection and Sysmon telemetry rules.',
           ip: '192.168.20.105',
-          vlan: 'VLAN 2 (Internal LAN)',
-          services: ['Sysmon Telemetry', 'Defender for Endpoint', 'PowerShell Remoting', 'RDP Session Host']
+          vlan: 'VLAN 2 (Security Sandbox)',
+          services: ['Sysmon Telemetry', 'Wazuh Endpoint Agent', 'Windows Defender', 'PowerShell Logging']
         },
         'rocky': {
-          title: 'Rocky OS Enterprise Node',
-          desc: 'RHEL-compatible enterprise Linux server replicating production environments for enterprise application deployment testing.',
+          title: 'Rocky Linux Enterprise Target',
+          zoneColor: 'bg-emerald-500',
+          img: '',
+          imgHint: 'Recommended: SELinux status or Apache/SSH hardening terminal',
+          desc: 'RHEL-compatible enterprise target server used for testing SELinux enforcement, SSH hardening, and web service vulnerability remediation.',
           ip: '192.168.20.50',
-          vlan: 'VLAN 2 (Internal LAN)',
-          services: ['SELinux Enforcing Mode', 'Apache HTTP Server', 'Firewalld Zones', 'NFS Share Export']
+          vlan: 'VLAN 2 (Security Sandbox)',
+          services: ['SELinux Enforcing', 'Apache HTTP Server', 'Firewalld', 'Wazuh Agent']
         }
       };
 
-      // Navigation Drawer Toggles
+      // Left Nav Drawer Toggle
       menuToggle.addEventListener('click', () => navDrawer.classList.add('open'));
       closeNav.addEventListener('click', () => navDrawer.classList.remove('open'));
 
-      // Node Click Zoom & Inspector Handler
+      // Reset Camera & Close Modal
+      const resetView = () => {
+        modalBackdrop.classList.remove('open');
+        svg.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
+      };
+
+      // Click Node -> Zoom In + Open Opaque Modal Over Center
       document.querySelectorAll('.topo-node').forEach(node => {
         node.addEventListener('click', (e) => {
           e.stopPropagation();
-          
-          // Clear active states
-          document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
-          node.classList.add('active');
-
           const id = node.getAttribute('data-id');
           const data = db[id];
 
+          // 1. Zoom SVG camera directly onto the clicked node
+          const transform = node.getAttribute('transform');
+          const match = transform.match(/translate\(([^,]+),\s*([^\)]+)\)/);
+          if (match) {
+            const x = parseFloat(match[1]);
+            const y = parseFloat(match[2]);
+            const scale = 2.1;
+            const translateX = 600 - (x * scale);
+            const translateY = 380 - (y * scale);
+            svg.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+          }
+
+          // 2. Populate & Display Opaque Modal
           if (data) {
             nodeTitle.textContent = data.title;
+            modalStatusDot.className = `w-3 h-3 rounded-full ${data.zoneColor}`;
             nodeDesc.textContent = data.desc;
             nodeIp.textContent = data.ip;
             nodeVlan.textContent = data.vlan;
+
+            // Handle Image vs Placeholder
+            if (data.img) {
+              nodeImage.src = data.img;
+              nodeImage.classList.remove('hidden');
+              nodeImagePlaceholder.classList.add('hidden');
+            } else {
+              nodeImage.classList.add('hidden');
+              nodeImagePlaceholder.classList.remove('hidden');
+              nodeImageHint.textContent = data.imgHint;
+            }
+
             nodeServices.innerHTML = data.services.map(s => `
-              <li class="flex items-center text-sm text-slate-300 bg-[#21262d] px-3 py-2 rounded-md border border-[#30363d]">
-                <span class="w-2 h-2 bg-blue-400 rounded-full mr-2.5"></span>
+              <li class="flex items-center text-xs font-mono text-slate-200 bg-[#0e131c] px-3 py-2 rounded-md border border-[#263042]">
+                <span class="w-1.5 h-1.5 rounded-full ${data.zoneColor} mr-2.5"></span>
                 ${s}
               </li>
             `).join('');
-            
-            drawer.classList.add('open');
-          }
 
-          // Calculate transform to zoom and center on clicked node
-          const transform = node.getAttribute('transform');
-          const translateMatch = transform.match(/translate\(([^,]+),\s*([^\)]+)\)/);
-          if (translateMatch) {
-            const x = parseFloat(translateMatch[1]);
-            const y = parseFloat(translateMatch[2]);
-            
-            // ViewBox is 1200x750. Center is (600, 375).
-            const scale = 1.6;
-            const translateX = 600 - (x * scale);
-            const translateY = 375 - (y * scale);
-            
-            svg.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+            // Slight delay so you see the zoom motion start before the opaque modal settles over it
+            setTimeout(() => {
+              modalBackdrop.classList.add('open');
+            }, 160);
           }
         });
       });
 
-      // Reset View Function
-      const resetView = () => {
-        document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
-        svg.style.transform = 'matrix(1, 0, 0, 1, 0, 0)';
-        drawer.classList.remove('open');
-      };
-
+      // Close via 'X' button, Reset View button, Escape key, or clicking outside modal
+      closeModalBtn.addEventListener('click', resetView);
       resetViewBtn.addEventListener('click', resetView);
-
-      // Click background to reset
-      document.querySelector('.topology-container').addEventListener('click', (e) => {
-        if (e.target.tagName === 'svg' || e.target.classList.contains('topology-container')) {
-          resetView();
-        }
+      modalBackdrop.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) resetView();
       });
-
-      closeInspector.addEventListener('click', () => {
-        drawer.classList.remove('open');
-        document.querySelectorAll('.topo-node').forEach(n => n.classList.remove('active'));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') resetView();
       });
     });
   </script>
 </body>
+  <script src="/assets/js/main.js"></script>
 </html>
