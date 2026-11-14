@@ -100,9 +100,7 @@ a:hover {
   }
 }
 
-/* ==========================================
-   4. BARE HAMBURGER & OFF-CANVAS DRAWER
-   ========================================== */
+/* --- 4. BARE HAMBURGER & OFF-CANVAS DRAWER --- */
 .menu-toggle {
   position: fixed;
   top: 1.2rem;
@@ -131,11 +129,10 @@ a:hover {
   border-right: 1px solid var(--border-color);
   transition: left 0.3s ease;
   z-index: 1000;
-  padding: 5rem 1.5rem 2rem;
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  align-items: flex-start;
+  justify-content: space-between; /* Pins footer text to bottom */
 }
 
 .nav-drawer.open {
@@ -148,6 +145,8 @@ a:hover {
   padding: 0.4rem 1rem;
   border-radius: 20px;
   transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+  display: block;
 }
 
 .nav-link:hover {
@@ -160,6 +159,23 @@ a:hover {
   background: #30363d;
   color: #58a6ff;
   font-weight: bold;
+}
+
+/* Close Button inside Drawer Header (styled as a clickable icon slot) */
+#closeNav {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+#closeNav:hover {
+  color: var(--text-accent);
 }
 
 .overlay {
@@ -176,7 +192,6 @@ a:hover {
   opacity: 1;
   pointer-events: auto;
 }
-
 /* ==========================================
    5. CARDS & LAYOUT SECTIONS (Resume & Writeups)
    ========================================== */
