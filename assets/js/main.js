@@ -93,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const detailDesc = document.getElementById('detail-desc');
   const detailLink = document.getElementById('detail-link');
   const detailLinkText = document.getElementById('detail-link-text');
+  const detailLink2 = document.getElementById('detail-link-2');
+  const detailLink2Text = document.getElementById('detail-link-2-text');
 
   recItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -108,6 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const desc = item.getAttribute('data-desc');
       const link = item.getAttribute('data-link');
       const linkText = item.getAttribute('data-link-text');
+      const link2 = item.getAttribute('data-link-2');
+      const link2Text = item.getAttribute('data-link-2-text');
 
       // Update detail panel content
       if (detailTitle) detailTitle.textContent = title;
@@ -125,6 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
           detailLink.href = '#';
         }
       }
+      if (detailLink2) {
+  if (link2) {
+    detailLink2.href = link2;
+    if (detailLink2Text) detailLink2Text.textContent = link2Text || 'Link';
+    detailLink2.classList.remove('hidden');
+  } else {
+    detailLink2.classList.add('hidden');
+    detailLink2.href = '#';
+  }
+}
     });
   });
 });
