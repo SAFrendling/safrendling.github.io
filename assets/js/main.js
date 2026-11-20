@@ -66,10 +66,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
   }
+  // --- 4. Artist Accordion Toggle (One Open at a Time) ---
+  const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+
+  accordionTriggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const parentBlock = trigger.closest('.artist-block');
+      const isAlreadyOpen = parentBlock.classList.contains('open');
+
+      // Close all artist blocks
+      document.querySelectorAll('.artist-block').forEach(block => {
+        block.classList.remove('open');
+      });
+
+      // Open the clicked one if it wasn't already open
+      if (!isAlreadyOpen) {
+        parentBlock.classList.add('open');
+      }
+    });
+  });
+
+  // --- 5. Recommendation Item Detail Inspector ---
   const recItems = document.querySelectorAll('.rec-item');
   const detailImg = document.getElementById('detail-img');
   const detailTitle = document.getElementById('detail-title');
   const detailDesc = document.getElementById('detail-desc');
+  const detailLink = document.getElementById('detail-link');
+  const detailLinkText = document.getElementById('detail-link-text');
 
   recItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -83,11 +106,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const title = item.getAttribute('data-title');
       const img = item.getAttribute('data-img');
       const desc = item.getAttribute('data-desc');
+      const link = item.getAttribute('data-link');
+      const linkText = item.getAttribute('data-link-text');
 
       // Update detail panel content
       if (detailTitle) detailTitle.textContent = title;
       if (detailImg) detailImg.src = img || '/assets/img/placeholder.jpg';
       if (detailDesc) detailDesc.textContent = desc;
+
+      // Show or hide the optional link button
+      if (detailLink) {
+        if (link) {
+          detailLink.href = link;
+          if (detailLinkText) detailLinkText.textContent = linkText || 'Listen';
+          detailLink.classList.remove('hidden');
+        } else {
+          detailLink.classList.add('hidden');
+          detailLink.href = '#';
+        }
+      }
     });
   });
 });
