@@ -598,6 +598,8 @@ html {
   font-size: 0.85rem;
   line-height: 1;
   padding-left: 2px; /* optical center for play triangle */
+  padding-bottom: 2px;
+  box-sizing: border-box;
 }
 
 .detail-link.hidden {
@@ -612,4 +614,5 @@ html {
 #detail-link-2 .detail-link-icon {
   font-size: 0.95rem;
   padding-left: 0;
+  padding-bottom: 2px;
 }
