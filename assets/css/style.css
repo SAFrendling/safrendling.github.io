@@ -505,11 +505,11 @@ html {
 }
 
 .song-list {
-  padding-left: 1.5rem;
+  padding-left: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.75rem;
 }
 
 .song-list .rec-item {
