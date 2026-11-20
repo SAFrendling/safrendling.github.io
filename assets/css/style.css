@@ -591,11 +591,12 @@ html {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: 1.5px solid currentColor;
   border-radius: 50%;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
+  line-height: 1;
   padding-left: 2px; /* optical center for play triangle */
 }
 
@@ -607,4 +608,8 @@ html {
   flex-direction: column;
   gap: 0.5rem;
   align-items: flex-start;
+}
+#detail-link-2 .detail-link-icon {
+  font-size: 0.95rem;
+  padding-left: 0;
 }
